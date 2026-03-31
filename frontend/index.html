@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecosistema Huella Digital</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Barra lateral (Sidebar) -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Huella Digital</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="overview">
+                    <i class="fa-solid fa-house"></i> Vista General
+                </a>
+                <a href="#" class="nav-item" data-target="security">
+                    <i class="fa-solid fa-lock"></i> Auditoría
+                </a>
+                <a href="#" class="nav-item" data-target="leaks">
+                    <i class="fa-solid fa-user-secret"></i> Leaks & OSINT
+                </a>
+                <a href="#" class="nav-item" data-target="social">
+                    <i class="fa-brands fa-reddit"></i> Redes Sociales
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="dot pulse"></span>
+                    <span>Sistema Conectado</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Contenido principal -->
+        <main class="main-content">
+            <header class="top-nav">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar repositorios...">
+                </div>
+                
+                <div class="user-profile" id="userProfile">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">Cargando...</span>
+                        <span class="user-login" id="userLogin">@github</span>
+                    </div>
+                    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="Avatar" id="userAvatar" class="avatar">
+                </div>
+            </header>
+
+            <!-- Vistas dinámicas -->
+            <div class="view-container active" id="view-overview">
+                <!-- Tarjetas de estadísticas generales -->
+                <div class="stats-grid">
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon" style="background: rgba(43, 116, 226, 0.1); color: #2b74e2;">
+                            <i class="fa-solid fa-book-bookmark"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Repositorios</h3>
+                            <p id="stat-total-repos">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Repos Inactivos (>6m)</h3>
+                            <p id="stat-inactive-repos">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Estrellas (Tus repos)</h3>
+                            <p id="stat-total-stars">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                            <i class="fa-solid fa-code-branch"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Forks en tu cuenta</h3>
+                            <p id="stat-total-forks">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filtros para repositorios -->
+                <div class="filters-bar glass-card">
+                    <div class="filter-group">
+                        <label>Estado</label>
+                        <select id="filterStatus">
+                            <option value="all">Todos</option>
+                            <option value="active">Activos recientes</option>
+                            <option value="inactive">Inactivos</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Visibilidad</label>
+                        <select id="filterVisibility">
+                            <option value="all">Todo</option>
+                            <option value="public">Públicos</option>
+                            <option value="private">Privados</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Tipo</label>
+                        <select id="filterType">
+                            <option value="all">Fuentes & Forks</option>
+                            <option value="source">Solo mis fuentes</option>
+                            <option value="fork">Solo forks</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="btnRefreshRepos">
+                        <i class="fa-solid fa-rotate-right"></i> Actualizar
+                    </button>
+                </div>
+
+                <!-- Lista de Repositorios (Grilla de Tarjetas) -->
+                <div class="repos-grid" id="reposGrid">
+                    <!-- Las tarjetas se inyectarán con JS -->
+                    <div class="loader-container">
+                        <span class="loader"></span>
+                        <p>Cargando repositorios desde GitHub...</p>
+                    </div>
+                </div>
+            </div> <!-- End view overview -->
+
+            <div class="view-container" id="view-security">
+                <div class="panel-header glass-card">
+                    <h2><i class="fa-solid fa-lock"></i> Auditoría de Seguridad de GitHub</h2>
+                    <p>Revisa qué llaves, Gists y aplicaciones tienen acceso a tus repositorios.</p>
+                    <button class="btn btn-primary mt-3" id="btnRunAudit">Ejecutar Auditoría</button>
+                </div>
+
+                <div class="audit-results mt-4" id="auditResults" style="display: none;">
+                    <div class="stats-grid">
+                        <div class="stat-card glass-card">
+                            <div class="stat-icon" style="color: #8b5cf6;"><i class="fa-solid fa-key"></i></div>
+                            <div class="stat-info">
+                                <h3>Keys SSH (Viejas)</h3>
+                                <p id="audit-ssh-count">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card">
+                            <div class="stat-icon" style="color: #ec4899;"><i class="fa-solid fa-file-code"></i></div>
+                            <div class="stat-info">
+                                <h3>Gists Públicos</h3>
+                                <p id="audit-gists-count">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card">
+                            <div class="stat-icon" style="color: #14b8a6;"><i class="fa-brands fa-osi"></i></div>
+                            <div class="stat-info">
+                                <h3>Apps Instaladas</h3>
+                                <p id="audit-apps-count">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card mt-4 p-4">
+                        <h3 class="mb-3">Aplicaciones OAuth Autorizadas</h3>
+                        <div class="table-responsive">
+                            <table class="data-table" id="appsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Aplicación</th>
+                                        <th>Alcance</th>
+                                        <th>Permisos Clave</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Injected -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Escáner de Secretos -->
+                <div class="glass-card mt-4 p-4">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="margin: 0;"><i class="fa-solid fa-user-secret"></i> Escáner de Secretos (Gitleaks)</h3>
+                        <button class="btn btn-primary" id="btnRunSecrets"><i class="fa-solid fa-magnifying-glass"></i> Escanear Repos</button>
+                    </div>
+                    <p style="color: var(--text-secondary);">Busca API Keys, tokens y credenciales expuestas en todos tus repositorios.</p>
+                    <div class="table-responsive mt-3" style="display: none;" id="secretsResultsPanel">
+                        <table class="data-table" id="secretsTable">
+                            <thead>
+                                <tr>
+                                    <th>Repositorio</th>
+                                    <th>Archivo</th>
+                                    <th>Tipo de Secreto</th>
+                                    <th>Línea</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Limpieza de Forks -->
+                <div class="glass-card mt-4 p-4">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="margin: 0;"><i class="fa-solid fa-code-fork"></i> Forks Abandonados</h3>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-primary" id="btnFindForks"><i class="fa-solid fa-magnifying-glass"></i> Buscar Forks</button>
+                            <button class="btn btn-danger" id="btnBulkDeleteForks" style="display: none;"><i class="fa-solid fa-trash-can"></i> Borrar Todos</button>
+                        </div>
+                    </div>
+                    <p style="color: var(--text-secondary);">Detecta forks en tu cuenta que no han recibido commits en mucho tiempo para liberar espacio.</p>
+                    <div class="table-responsive mt-3" style="display: none;" id="forksResultsPanel">
+                        <table class="data-table" id="forksTable">
+                            <thead>
+                                <tr>
+                                    <th>Forks</th>
+                                    <th>Repositorio Padre</th>
+                                    <th>Último Commit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div> <!-- End view security -->
+
+        </main>
+    </div>
+
+    <!-- Modal Global de Acciones -->
+    <div id="actionModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content glass-card p-4" style="max-width: 500px; width: 90%; margin: auto; position: relative;">
+            <h2 id="modalTitle" style="margin-top: 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-triangle-exclamation" style="color: var(--warning);"></i> Confirmar Acción</h2>
+            <p id="modalMessage" class="mt-3" style="color: var(--text-secondary);">¿Estás seguro que deseas continuar?</p>
+            
+            <div id="modalInputContainer" class="mt-4" style="display: none;">
+                <label for="modalInputVerify" style="font-size: 0.9rem; color: var(--text-primary);">
+                    Para confirmar, escribe <strong id="modalExpectedInput" style="user-select: none;"></strong>:
+                </label>
+                <input type="text" id="modalInputVerify" class="search-bar" style="width: 100%; margin-top: 0.5rem; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); padding: 0.75rem; border-radius: 8px; color: white;" autocomplete="off" placeholder="Escribe aquí para confirmar">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
+                <button class="btn btn-secondary" id="btnCancelModal">Cancelar</button>
+                <button class="btn btn-danger" id="btnConfirmModal" disabled>Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
