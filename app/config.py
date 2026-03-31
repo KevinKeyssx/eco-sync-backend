@@ -13,10 +13,16 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
     )
 
+    # URLS
+    url_frontend: str = ""
+    url_backend: str = ""
+
     # OAuth Keys
     github_client_id: str = ""
     github_client_secret: str = ""
     session_secret_key: str = "super_secret_default_key_change_in_production"
+    github_oauth_url: str = ""
+
 
     inactivity_months: int = 6
     hibp_api_key: str | None = None
@@ -27,7 +33,10 @@ class Settings(BaseSettings):
     # Google OAuth
     google_client_id: str = ""
     google_client_secret: str = ""
-    
+    google_oauth_url: str = ""
+    google_token_url: str = ""
+    google_scopes: str = ""
+
     # Reddit API Credentials
     reddit_client_id: str | None = None
     reddit_client_secret: str | None = None
