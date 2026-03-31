@@ -21,7 +21,7 @@ def login() -> RedirectResponse:
         raise HTTPException(
             status_code=500, detail="GITHUB_CLIENT_ID is not configured."
         )
-    url = f"https://github.com/login/oauth/authorize?client_id={settings.github_client_id}&scope={GITHUB_SCOPES}"
+    url = f"{settings.github_oauth_url}/authorize?client_id={settings.github_client_id}&scope={GITHUB_SCOPES}"
     return RedirectResponse(url)
 
 
@@ -38,7 +38,7 @@ def callback(code: str, request: Request) -> RedirectResponse:
 
     # Exchange code for access token
     response = requests.post(
-        "https://github.com/login/oauth/access_token",
+        f"{settings.github_oauth_url}/access_token",
         headers={"Accept": "application/json"},
         data={
             "client_id": settings.github_client_id,
@@ -64,7 +64,7 @@ def callback(code: str, request: Request) -> RedirectResponse:
     logger.info("User successfully authenticated via OAuth.")
 
     # Redirect to the Svelte frontend (scan/github page)
-    return RedirectResponse(url="http://localhost:5173/scan/github?authenticated=true")
+    return RedirectResponse(url=f"{settings.url_frontend}/scan/github?authenticated=true")
 
 @auth_router.get("/logout", summary="Log out the user")
 def logout(request: Request) -> RedirectResponse:
@@ -76,9 +76,6 @@ def logout(request: Request) -> RedirectResponse:
 # ---------------------------------------------------------------------------
 # Google OAuth2
 # ---------------------------------------------------------------------------
-GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
-GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
-GOOGLE_SCOPES = "https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file"
 
 
 @auth_router.get("/google/login", summary="Initiate Google OAuth flow")
@@ -88,13 +85,13 @@ def google_login() -> RedirectResponse:
 
     params = {
         "client_id": settings.google_client_id,
-        "redirect_uri": "http://localhost:8000/auth/google/callback",
+        "redirect_uri": f"{settings.url_backend}/auth/google/callback",
         "response_type": "code",
-        "scope": GOOGLE_SCOPES,
+        "scope": settings.google_scopes,
         "access_type": "offline",
         "prompt": "consent",
     }
-    url = f"{GOOGLE_AUTH_URL}?{urlencode(params)}"
+    url = f"{settings.google_oauth_url}?{urlencode(params)}"
     return RedirectResponse(url)
 
 
@@ -104,13 +101,13 @@ def google_callback(code: str, request: Request) -> RedirectResponse:
         raise HTTPException(status_code=500, detail="Google OAuth credentials not configured.")
 
     response = requests.post(
-        GOOGLE_TOKEN_URL,
+        settings.google_token_url,
         data={
             "client_id": settings.google_client_id,
             "client_secret": settings.google_client_secret,
             "code": code,
             "grant_type": "authorization_code",
-            "redirect_uri": "http://localhost:8000/auth/google/callback",
+            "redirect_uri": f"{settings.url_backend}/auth/google/callback",
         },
     )
 
@@ -130,4 +127,4 @@ def google_callback(code: str, request: Request) -> RedirectResponse:
         request.session["google_refresh_token"] = refresh_token
     logger.info("User successfully authenticated via Google OAuth.")
 
-    return RedirectResponse(url="http://localhost:5173/scan/drive?authenticated=true")
+    return RedirectResponse(url=f"{settings.url_frontend}/scan/drive?authenticated=true")
