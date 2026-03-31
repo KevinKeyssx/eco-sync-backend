@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     inactivity_months: int = 6
     hibp_api_key: str | None = None
 
+    # CORS Config
+    allowed_origins: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8000,http://127.0.0.1:8000"
+
     # Google OAuth
     google_client_id: str = ""
     google_client_secret: str = ""
