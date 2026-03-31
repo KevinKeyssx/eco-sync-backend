@@ -27,10 +27,13 @@ logging.basicConfig(
 # FastAPI app
 # ---------------------------------------------------------------------------
 app = FastAPI(
-    title="GitHub Inactive Repos Detector",
+    title="EcoSync",
     description=(
         "Analyzes a GitHub account and detects repositories that have been "
-        "inactive (no commits) for a configurable number of months."
+        "inactive (no commits) for a configurable number of months.",
+        "Also scans for forgotten accounts on other platforms and checks for compromised credentials.",
+        "And analyzes Google Drive for waste files.",
+        "And analyzes local files for waste files.",
     ),
     version="1.0.0",
     docs_url="/docs",
